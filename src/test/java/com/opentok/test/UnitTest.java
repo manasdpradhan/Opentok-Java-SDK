@@ -28,8 +28,8 @@ public class UnitTest {
     private String apiSecret;
 
     public UnitTest() {
-        apiKey = 1127;
-        apiSecret = "f92f49ece2ac828587da9266858578e4";
+        apiKey = Integer.valueOf(System.getProperty("apiKey"));
+        apiSecret = System.getProperty("apiSecret");
 		sdk = new OpenTokSDK(apiKey, apiSecret);
     }
 
@@ -221,7 +221,7 @@ public class UnitTest {
         } catch (OpenTokException e) {
             expected = e;
         }
-        Assert.assertNotNull("Java SDK tests: exception should be thrown for null sessionId", expected);
+        Assert.assertNotNull("Change: Java SDK tests: exception should be thrown for empty sessionId", expected);
     }
 
     @Test
@@ -232,7 +232,7 @@ public class UnitTest {
         } catch (OpenTokException e) {
             expected = e;
         }
-        Assert.assertNotNull("Java SDK tests: exception should be thrown for null sessionId", expected);
+        Assert.assertNotNull("Java SDK tests: exception should be thrown for invalid sessionId", expected);
     }
 
     @Test
