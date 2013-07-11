@@ -61,12 +61,11 @@ public class OpenTokSDK {
                     break;
                 }
             }
+            if(!decodedSessionId.split("~")[1].equals(String.valueOf(api_key))) {
+                throw new OpenTokException("SessionId does not belong to the same partnerId");
+            }
         } catch (Exception e) {
             throw new OpenTokException("SessionId cannot be invalid.");
-        }
-        
-        if(!decodedSessionId.split("~")[1].equals(String.valueOf(api_key))) {
-            throw new OpenTokException("SessionId does not belong to the same partnerId");
         }
         
         
