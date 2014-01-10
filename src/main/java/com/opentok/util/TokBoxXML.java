@@ -9,13 +9,12 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.opentok.exception.OpenTokException;
-import com.opentok.util.TokBoxUtils;
 
 public class TokBoxXML {
 
 	private Document xml;
 
-	public TokBoxXML(String xmlString) throws OpenTokException{
+	public TokBoxXML(String xmlString) throws OpenTokException {
 		
 		try {
 			this.xml = TokBoxUtils.setupDocument(xmlString);
