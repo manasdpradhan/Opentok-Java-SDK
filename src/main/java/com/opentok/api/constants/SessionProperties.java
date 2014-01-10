@@ -1,37 +1,61 @@
-
-/*!
-* OpenTok Java Library
-* http://www.tokbox.com/
-*
-* Copyright 2010, TokBox, Inc.
-*/
 package com.opentok.api.constants;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class SessionProperties {
 
-	public Boolean echoSuppression_enabled = null;
-	public Integer multiplexer_numOutputStreams = null;
-	public Integer multiplexer_switchType = null;
-	public Integer multiplexer_switchTimeout = null;
-	public Integer multiplexer_transitionDuration = null;
-	public String p2p_preference = null;
 
-	public Map<String, String> to_map() {
-		Map<String, String> m = new HashMap<String, String>();
-		if(this.echoSuppression_enabled != null)
-			m.put("echoSuppression.enabled", this.echoSuppression_enabled.toString());
-		if(this.multiplexer_numOutputStreams != null)
-			m.put("multiplexer.numOutputStreams", this.multiplexer_numOutputStreams.toString());
-		if(this.multiplexer_switchType != null)
-			m.put("multiplexer.switchType", this.multiplexer_switchType.toString());
-		if(this.multiplexer_switchTimeout != null)
-			m.put("multiplexer.switchTimeout", this.multiplexer_switchTimeout.toString());
-		if(this.multiplexer_transitionDuration != null)
-			m.put("multiplexer.transitionDuration", this.multiplexer_transitionDuration.toString());
-		if(this.p2p_preference != null)
-			m.put("p2p.preference", this.p2p_preference);
-		return m;
-	}
+    private String location = null;
+    private boolean p2pPreference = false;
+
+    private SessionProperties(Builder builder)
+    {
+        this.location = builder.location;
+        this.p2pPreference = builder.p2pPreference;
+    }
+
+    public static class Builder
+    {
+        private String location = null;
+        private boolean p2pPreference = false;
+        
+
+        public Builder location(String location)
+        {
+            this.location = location;
+            return this;
+        }
+
+        public Builder p2pPreference(boolean p2pPreference)
+        {
+            this.p2pPreference = p2pPreference;
+            return this;
+        }
+
+        public SessionProperties build()
+        {
+            return new SessionProperties(this);
+        }
+    }
+    public String getLocation() {
+        return location;
+    }
+    
+    public boolean isP2pPreference() {
+        return p2pPreference;
+    }
+
+    public Map<String, String> toMap() {
+        Map<String, String> params = new HashMap<String, String>();
+        if (null != location) {
+            params.put("location", location);
+        }
+        if (p2pPreference) {
+            params.put("p2p.preference", "enabled");
+        }
+        return params;
+    }
+
 };
