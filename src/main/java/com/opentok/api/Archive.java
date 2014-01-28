@@ -2,9 +2,44 @@ package com.opentok.api;
 
 import java.util.UUID;
 
+/**
+* Represents an archive of an OpenTok session. 
+*/
 public class Archive {
+    /**
+     * Defines values returned by the {@link Archive#getStatus} method.
+     */
     public enum ArchiveState {
-        available, deleted, failed, started, stopped, uploaded, unknown
+        /**
+         * The archive file is available for download from the OpenTok cloud. You can get the URL of
+         * the download file by calling the {@link Archive#getUrl} method.
+         */
+        available,
+        /**
+         * The archive file has been deleted.
+         */
+        deleted,
+        /**
+         * The recording of the archive failed.
+         */
+        failed,
+        /**
+         * The archive recording has started and is in progress.
+         */
+        started,
+        /**
+         * The archive recording has stopped, but the file is not available.
+         */
+        stopped,
+        /**
+         * The archive file is available at the target S3 bucket you specified using the
+         * REST API.
+         */
+        uploaded,
+        /**
+         * The archive status is unknown.
+         */
+        unknown
     }
 
     private long createdAt = System.currentTimeMillis();
@@ -21,6 +56,9 @@ public class Archive {
     public Archive() {
     }
 
+    /**
+     * The time at which the archive was created, in milliseconds since the UNIX epoch.
+     */
     public long getCreatedAt() {
         return createdAt;
     }
@@ -29,6 +67,9 @@ public class Archive {
         this.createdAt = createdAt;
     }
 
+    /**
+     * The duration of the archive, in milliseconds.
+     */
     public int getDuration() {
         return duration;
     }
@@ -37,6 +78,9 @@ public class Archive {
         this.duration = duration;
     }
 
+    /**
+     * The archive ID.
+     */
     public UUID getId() {
         return id;
     }
@@ -45,6 +89,9 @@ public class Archive {
         this.id = id;
     }
 
+    /**
+     * The name of the archive.
+     */
     public String getName() {
         return name;
     }
@@ -53,6 +100,9 @@ public class Archive {
         this.name = name;
     }
 
+    /**
+     * The OpenTok API key associated with the archive.
+     */
     public int getPartnerId() {
         return partnerId;
     }
@@ -61,6 +111,10 @@ public class Archive {
         this.partnerId = partnerId;
     }
 
+    /**
+     * For archives with the status "stopped", this can be set to "90 mins exceeded", "failure", "session ended",
+     * or "user initiated". For archives with the status "failed", this can be set to "system failure".
+     */
     public String getReason() {
         return reason;
     }
@@ -69,6 +123,9 @@ public class Archive {
         this.reason = reason;
     }
 
+    /**
+     * The session ID of the OpenTok session associated with this archive.
+     */
     public String getSessionId() {
         return sessionId;
     }
@@ -77,6 +134,9 @@ public class Archive {
         this.sessionId = sessionId;
     }
 
+    /** 
+     * The size of the MP4 file. For archives that have not been generated, this value is set to 0.
+     */
     public int getSize() {
         return size;
     }
@@ -85,6 +145,9 @@ public class Archive {
         this.size = size;
     }
 
+    /**
+     * The status of the archive, as defined by the {@link ArchiveState} enum.
+     */
     public ArchiveState getStatus() {
         return status;
     }
@@ -93,6 +156,12 @@ public class Archive {
         this.status = status;
     }
 
+    /**
+     * The download URL of the available MP4 file. This is only set for an archive with the status set to "available";
+     * for other archives, (including archives wit the status "uploaded") this method returns null. The download URL is
+     * obfuscated, and the file is only available from the URL for 10 minutes. To generate a new URL, call
+     * the {@link OpenTokSDK#listArchives()} or {@link OpenTokSDK#getArchive(String)} method.
+     */
     public String getUrl() {
         return url;
     }
