@@ -129,7 +129,7 @@ public class OpenTokSDK {
      *
      * @param sessionId The session ID corresponding to the session to which the user will connect.
      *
-     * @param role Optional. Each role defines a set of permissions granted to the token.
+     * @param role Each role defines a set of permissions granted to the token.
      * Valid values are defined in the RoleConstants class:
      *
      *   * `SUBSCRIBER` &mdash; A subscriber can only subscribe to streams.</li>
@@ -141,15 +141,13 @@ public class OpenTokSDK {
      *     can call the `forceUnpublish()` and `forceDisconnect()` method of the
      *     Session object.</li>
      *
-     * @param expireTime Optional. The time when the token
-     * will expire, defined as an integer value for a Unix timestamp (in seconds).
-     * If you do not specify this value, tokens expire 24 hours after being created.
-     * The `expiration_time` value, if specified, must be within 30 days
-     * of the creation time.
+     * @param expireTime The expiration time, in seconds, since the UNIX epoch. Pass in 0 to use
+     * the default expiration time of 24 hours after the token creation time. The maximum expiration
+     * time is 30 days after the creation time.
      *
-     * @param connectionData Optional. A string containing metadata describing the end-user.
-     * For example, you can pass the user ID, name, or other data describing the end-user.
-     * The length of the string is limited to 1000 characters. This data cannot be updated once it is set.
+     * @param connectionData A string containing metadata describing the end-user. For example, you can pass the
+     * user ID, name, or other data describing the end-user. The length of the string is limited to 1000 characters.
+     * This data cannot be updated once it is set.
      *
      * @return The token string.
      */
@@ -274,7 +272,9 @@ public class OpenTokSDK {
      *
      * @param sessionId The session ID.
      * @param role The role assigned to the token.
-     * @param expireTime The expiration time.
+     * @param expireTime The expiration time, in seconds, since the UNIX epoch. Pass in 0 to use
+     * the default expiration time of 24 hours after the token creation time. The maximum expiration
+     * time is 30 days after the creation time.
      *
      * @see #generateToken(String sessionId, String role, long expireTime, String connectionData)
      */
