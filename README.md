@@ -189,8 +189,8 @@ void logArchiveInfo(OpenTokSDK sdk, String archiveId) {
 }
 </pre>
 
-The following method logs information on all archives (up to 1000)
-for your API key.
+The following method logs information on all archives (up to 50)
+for your API key:
 
 <pre>
 void listArchives(OpenTokSDK sdk) {

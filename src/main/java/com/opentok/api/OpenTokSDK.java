@@ -420,8 +420,9 @@ public class OpenTokSDK {
 
     /**
      * Returns a List of {@link Archive} objects, representing archives that are both
-     * both completed and in-progress, for your API key. This list is limited to 1000 archives.
-     * For a specific range of archives, call {@link #listArchives(int offset, int count)}.
+     * both completed and in-progress, for your API key. This list is limited to 1000 archives
+     * starting with the first archive recorded. For a specific range of archives, call
+     * {@link #listArchives(int offset, int count)}.
      *
      * @return A List of {@link Archive} objects.
      */
@@ -452,7 +453,7 @@ public class OpenTokSDK {
     }
     
     /**
-     * Starts archiving an OpenTok session.
+     * Starts archiving an OpenTok 2.0 session.
      *
      * <p>
      * Clients must be actively connected to the OpenTok session for you to successfully start recording an archive.
@@ -461,7 +462,8 @@ public class OpenTokSDK {
      * server-enabled sessions; you cannot archive peer-to-peer sessions.
      *
      * @param sessionId The session ID of the OpenTok session to archive.
-     * @param name The name of the archive.
+     * @param name The name of the archive. You can use this name to identify the archive. It is a property
+     * of the Archive object, and it is a property of archive-related events in the OpenTok JavaScript SDK.
      *
      * @return The Archive object. This object includes properties defining the archive, including the archive ID.
      */
@@ -486,6 +488,9 @@ public class OpenTokSDK {
      * <p>
      * Archives automatically stop recording after 90 minutes or when all clients have disconnected from the
      * session being archived.
+     *
+     * @param archiveId The archive ID of the archive you want to stop recording.
+     * @return The Archive object corresponding to the archive being stopped.
      */
     public Archive stopArchive(String archiveId) throws OpenTokException {
         HashMap<String, String> headers = new HashMap<String, String>();
@@ -506,6 +511,8 @@ public class OpenTokSDK {
      * You can only delete an archive which has a status of "available" or "uploaded". Deleting an archive
      * removes its record from the list of archives. For an "available" archive, it also removes the archive
      * file, making it unavailable for download.
+     *
+     * @param archiveId The archive ID of the archive you want to delete.
      */
     public Archive deleteArchive(String archiveId) throws OpenTokException {
         ObjectMapper mapper = new ObjectMapper();
