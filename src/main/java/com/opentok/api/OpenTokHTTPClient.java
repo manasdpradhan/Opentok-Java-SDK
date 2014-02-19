@@ -32,6 +32,8 @@ public class OpenTokHTTPClient {
                         + result.getStatusText());
             }
             return result.getResponseBody();
+        } catch (OpenTokRequestException e) {
+            throw new OpenTokRequestException(e.getErrorCode(), e.getMessage());
         } catch (Exception e) {
             throw new OpenTokRequestException(500, e.getMessage());
         }
@@ -48,6 +50,8 @@ public class OpenTokHTTPClient {
                         + result.getStatusText());
             }
             return result.getResponseBody();
+        } catch (OpenTokRequestException e) {
+            throw new OpenTokRequestException(e.getErrorCode(), e.getMessage());
         } catch (Exception e) {
             throw new OpenTokRequestException(500, e.getMessage());
         }
@@ -82,6 +86,8 @@ public class OpenTokHTTPClient {
             }
 
             return result.getResponseBody();
+        } catch (OpenTokRequestException e) {
+            throw new OpenTokRequestException(e.getErrorCode(), e.getMessage());
         } catch (Exception e) {
             throw new OpenTokRequestException(500, e.getMessage());
         }
