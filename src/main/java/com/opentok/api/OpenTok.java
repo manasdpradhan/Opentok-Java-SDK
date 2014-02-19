@@ -354,8 +354,8 @@ public class OpenTok {
      *
      * @return A List of {@link Archive} objects.
      */
-    public List<Archive> listArchives() throws OpenTokException {
-        return listArchives(0, 1000);
+    public ArchiveList listArchives() throws OpenTokException {
+        return listArchives(0, 0);
     }
 
     /**
@@ -367,14 +367,20 @@ public class OpenTok {
      * @param count The number of archives to be returned. The maximum number of archives returned is 1000.
      * @return A List of {@link Archive} objects.
      */
-    public List<Archive> listArchives(int offset, int count) throws OpenTokException {
+    public ArchiveList listArchives(int offset, int count) throws OpenTokException {
         ObjectMapper mapper = new ObjectMapper();
-        String archive = OpenTokHTTPClient.makeGetRequest("/v2/partner/" + this.apiKey + "/archive?offset=" + offset + "&count="
-                + count);
+        
+        String requestString = "/v2/partner/" + this.apiKey + "/archive?offset=" + offset;
+        if(count != 0) { 
+            requestString = requestString + "&count=" + count;
+        }
+        String archive = OpenTokHTTPClient.makeGetRequest(requestString);
         try {
             JsonNode node = mapper.readTree(archive);
-            return mapper.readValue(node.get("items"), new TypeReference<List<Archive>>() {
+            List<Archive> items =  mapper.readValue(node.get("items"), new TypeReference<List<Archive>>() {
             });
+            int totalCount =  mapper.readValue(node.get("count"), Integer.class);
+            return new ArchiveList(totalCount, items);
         } catch (Exception e) {
             throw new OpenTokRequestException(500, "Exception mapping json: " + e.getMessage());
         }
