@@ -1,5 +1,22 @@
 package com.opentok.test;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.delete;
+import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.matching;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -8,26 +25,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.opentok.*;
 import org.apache.commons.lang.StringUtils;
-
-import com.opentok.constants.Version;
-import com.opentok.exception.OpenTokException;
-import com.opentok.exception.InvalidArgumentException;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.opentok.Archive;
+import com.opentok.MediaMode;
+import com.opentok.OpenTok;
+import com.opentok.Role;
+import com.opentok.Session;
+import com.opentok.SessionProperties;
+import com.opentok.TokenOptions;
+import com.opentok.constants.Config;
+import com.opentok.exception.InvalidArgumentException;
+import com.opentok.exception.OpenTokException;
 
 public class OpenTokTest {
 
     private int apiKey = 123456;
     private String apiSecret = "1234567890abcdef1234567890abcdef1234567890";
-    private String apiUrl = "http://localhost:8080";
+    private final String apiUrl = "http://localhost:8080";
     private OpenTok sdk;
 
     @Rule
@@ -77,7 +96,7 @@ public class OpenTokTest {
         verify(postRequestedFor(urlMatching("/session/create"))
                 .withRequestBody(matching(".*p2p.preference=enabled.*"))
                 .withHeader("X-TB-PARTNER-AUTH", matching(this.apiKey+":"+this.apiSecret))
-                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Version.VERSION+".*")));
+                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Config.VERSION+".*")));
     }
 
     @Test
@@ -106,7 +125,7 @@ public class OpenTokTest {
                 // NOTE: this is a pretty bad way to verify, ideally we can decode the body and then query the object
                 .withRequestBody(matching(".*p2p.preference=disabled.*"))
                 .withHeader("X-TB-PARTNER-AUTH", matching(this.apiKey+":"+this.apiSecret))
-                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Version.VERSION+".*")));
+                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Config.VERSION+".*")));
     }
 
     @Test
@@ -136,7 +155,7 @@ public class OpenTokTest {
                 // TODO: this is a pretty bad way to verify, ideally we can decode the body and then query the object
                 .withRequestBody(matching(".*location="+locationHint+".*"))
                 .withHeader("X-TB-PARTNER-AUTH", matching(this.apiKey+":"+this.apiSecret))
-                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Version.VERSION+".*")));
+                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Config.VERSION+".*")));
     }
 
     @Test(expected = InvalidArgumentException.class)
@@ -257,7 +276,7 @@ public class OpenTokTest {
         String sessionId = "1_MX4xMjM0NTZ-flNhdCBNYXIgMTUgMTQ6NDI6MjMgUERUIDIwMTR-MC40OTAxMzAyNX4";
         OpenTok opentok = new OpenTok(apiKey, apiSecret);
         // purposely contains some exotic characters
-        String actualData = "{\"name\":\"%foo ç &\"}";
+        String actualData = "{\"name\":\"%foo �� &\"}";
         Exception tooLongException = null;
 
         String defaultToken = opentok.generateToken(sessionId);
@@ -351,7 +370,7 @@ public class OpenTokTest {
 
         verify(getRequestedFor(urlMatching("/v2/partner/"+this.apiKey+"/archive/"+archiveId))
                 .withHeader("X-TB-PARTNER-AUTH", matching(this.apiKey+":"+this.apiSecret))
-                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Version.VERSION+".*")));
+                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Config.VERSION+".*")));
     }
 
     // TODO: test get archive failure scenarios
@@ -454,7 +473,7 @@ public class OpenTokTest {
 
         verify(getRequestedFor(urlMatching("/v2/partner/"+this.apiKey+"/archive"))
                 .withHeader("X-TB-PARTNER-AUTH", matching(this.apiKey+":"+this.apiSecret))
-                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Version.VERSION+".*")));
+                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Config.VERSION+".*")));
     }
 
     // TODO: test list archives with count and offset
@@ -491,7 +510,7 @@ public class OpenTokTest {
                 // TODO: find a way to match JSON without caring about spacing
                 //.withRequestBody(matching(".*"+".*"))
                 .withHeader("X-TB-PARTNER-AUTH", matching(this.apiKey+":"+this.apiSecret))
-                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Version.VERSION+".*")));
+                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Config.VERSION+".*")));
     }
 
     // TODO: test start archive with name
@@ -526,7 +545,7 @@ public class OpenTokTest {
 
         verify(postRequestedFor(urlMatching("/v2/partner/"+this.apiKey+"/archive/"+archiveId+"/stop"))
                 .withHeader("X-TB-PARTNER-AUTH", matching(this.apiKey+":"+this.apiSecret))
-                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Version.VERSION+".*")));
+                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Config.VERSION+".*")));
     }
 
     // TODO: test stop archive failure scenarios
@@ -543,7 +562,7 @@ public class OpenTokTest {
 
         verify(deleteRequestedFor(urlMatching("/v2/partner/"+this.apiKey+"/archive/"+archiveId))
                 .withHeader("X-TB-PARTNER-AUTH", matching(this.apiKey+":"+this.apiSecret))
-                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Version.VERSION+".*")));
+                .withHeader("User-Agent", matching(".*Opentok-Java-SDK/"+ Config.VERSION+".*")));
     }
 
     // TODO: test delete archive failure scenarios
