@@ -12,21 +12,23 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.xml.sax.InputSource;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.opentok.exception.OpenTokException;
-import com.opentok.exception.InvalidArgumentException;
-import com.opentok.exception.RequestException;
-import com.opentok.util.Crypto;
-import com.opentok.util.HttpClient;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.xml.sax.InputSource;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.opentok.constants.Config;
+import com.opentok.exception.InvalidArgumentException;
+import com.opentok.exception.OpenTokException;
+import com.opentok.exception.RequestException;
+import com.opentok.util.Crypto;
+import com.opentok.util.Fallback;
+import com.opentok.util.HttpClient;
 
 /**
 * Contains methods for creating OpenTok sessions, generating tokens, and working with archives.
@@ -40,11 +42,11 @@ import org.xml.sax.InputSource;
 */
 public class OpenTok {
 
-    private int apiKey;
-    private String apiSecret;
+    private final int apiKey;
+    private final String apiSecret;
     protected HttpClient client;
-    static protected ObjectReader archiveReader = new ObjectMapper()
-            .reader(Archive.class);
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    static protected ObjectReader archiveReader = MAPPER.reader(Archive.class);
 
     /**
      * Creates an OpenTok object.
@@ -55,13 +57,14 @@ public class OpenTok {
      * page.)
      */
     public OpenTok(int apiKey, String apiSecret) {
-        this(apiKey, apiSecret, "https://api.opentok.com");
+        this(apiKey, apiSecret, Config.API_URL);
     }
 
     public OpenTok(int apiKey, String apiSecret, String apiUrl) {
         this.apiKey = apiKey;
         this.apiSecret = apiSecret.trim();
         this.client = new HttpClient.Builder(apiKey, apiSecret)
+                .usePartnerCredentials()
                 .apiUrl(apiUrl)
                 .build();
     }
@@ -243,7 +246,7 @@ public class OpenTok {
         } else {
             params = new SessionProperties.Builder().build().toMap();
         }
-        
+
         String xmlResponse = this.client.createSession(params);
 
 
@@ -307,7 +310,7 @@ public class OpenTok {
         InputSource source = new InputSource(new StringReader(xml));
         return xpath.evaluate(xpathQuery, source);
     }
-    
+
     /**
      * Gets an {@link Archive} object for the given archive ID.
      *
@@ -348,11 +351,11 @@ public class OpenTok {
      * @return A List of {@link Archive} objects.
      */
     public List<Archive> listArchives(int offset, int count) throws OpenTokException {
-        ObjectMapper mapper = new ObjectMapper();
+
         String archive = this.client.getArchives(offset, count);
         try {
-            JsonParser jp = mapper.getFactory().createParser(archive);
-            return mapper.readValue(mapper.treeAsTokens(mapper.readTree(jp).get("items")),
+            JsonParser jp = MAPPER.getFactory().createParser(archive);
+            return MAPPER.readValue(MAPPER.treeAsTokens(MAPPER.readTree(jp).get("items")),
                     TypeFactory.defaultInstance().constructCollectionType(ArrayList.class, Archive.class));
 
         // if we only wanted Java 7 and above, we could DRY this into one catch clause
@@ -366,7 +369,7 @@ public class OpenTok {
             throw new RequestException("Exception mapping json: " + e.getMessage());
         }
     }
-    
+
     /**
      * Starts archiving an OpenTok 2.0 session.
      *
@@ -415,7 +418,7 @@ public class OpenTok {
             throw new RequestException("Exception mapping json: " + e.getMessage());
         }
     }
-    
+
     /**
      * Deletes an OpenTok archive.
      * <p>
@@ -427,5 +430,36 @@ public class OpenTok {
      */
     public void deleteArchive(String archiveId) throws OpenTokException {
         this.client.deleteArchive(archiveId);
+    }
+
+    public Map<String, Object> updateArchiveStorage(StorageType storageType,
+            Map<String, String> config, Fallback fallback) throws RequestException, OpenTokException {
+        String response = client.updateArchiveStorage(storageType, config, fallback);
+        try {
+            return MAPPER.readValue(response, new TypeReference<Map<String, Object>>(){});
+        } catch (JsonParseException e) {
+            throw new OpenTokException("Could not map json to an OpenTok partner", e);
+        } catch (JsonMappingException e) {
+            throw new OpenTokException("Could not map json to an OpenTok partner", e);
+        } catch (IOException e) {
+            throw new OpenTokException("Could not map json to an OpenTok partner", e);
+        }
+    }
+
+    public void deleteArchiveStorage() throws RequestException, OpenTokException {
+        client.deleteArchiveStorage();
+    }
+
+    public Callback updateArchiveCallback(String url) throws RequestException, OpenTokException {
+        String response = client.updateCallbackUrl("archive", "status", url);
+        try {
+            return MAPPER.readValue(response, Callback.class);
+        } catch (JsonParseException e) {
+            throw new OpenTokException("Could not map json to an OpenTok callback", e);
+        } catch (JsonMappingException e) {
+            throw new OpenTokException("Could not map json to an OpenTok callback", e);
+        } catch (IOException e) {
+            throw new OpenTokException("Could not map json to an OpenTok callback", e);
+        }
     }
 }
