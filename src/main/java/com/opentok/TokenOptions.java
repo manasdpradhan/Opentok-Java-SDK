@@ -7,6 +7,8 @@
  */
 package com.opentok;
 
+import java.util.List;
+
 import com.opentok.exception.InvalidArgumentException;
 
 /**
@@ -18,9 +20,10 @@ import com.opentok.exception.InvalidArgumentException;
  */
 public class TokenOptions {
 
-    private Role role;
-    private double expireTime;
-    private String data;
+    private final Role role;
+    private final double expireTime;
+    private final String data;
+    private final List<String> initialLayoutClassList;
 
     private TokenOptions(Builder builder) {
         this.role = builder.role != null ? builder.role : Role.PUBLISHER;
@@ -30,6 +33,8 @@ public class TokenOptions {
 
         // default value of null means to omit the key "connection_data" from the token
         this.data = builder.data;
+
+        this.initialLayoutClassList = builder.initialLayoutClassList;
     }
 
     /**
@@ -55,6 +60,18 @@ public class TokenOptions {
         return data;
     }
 
+    public String getInitialLayoutClassList() {
+        String layoutClassListStr = "";
+        if (initialLayoutClassList != null) {
+            for (String current :initialLayoutClassList) {
+                layoutClassListStr = layoutClassListStr.concat(current + " ");
+            }
+            return layoutClassListStr.substring(0, layoutClassListStr.length() -1);
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Use this class to create a TokenOptions object.
      *
@@ -64,6 +81,7 @@ public class TokenOptions {
         private Role role;
         private double expireTime = 0;
         private String data;
+        private List<String> initialLayoutClassList;
 
         /**
          * Sets the role for the token. Each role defines a set of permissions granted to the token.
@@ -109,6 +127,21 @@ public class TokenOptions {
         public Builder data(String data) throws InvalidArgumentException {
             if (data.length() <= 1000) {
                 this.data = data;
+            } else {
+                throw new InvalidArgumentException(
+                        "The given connection data is too long, limit is 1000 characters: " + data.length());
+            }
+            return this;
+        }
+
+        /**
+         * A comma separated list of strings containing layout classes for archiving / broadcasting
+         *
+         * @param data The connection metadata.
+         */
+        public Builder initialLayoutClassList(List<String> initialLayoutClassList) throws InvalidArgumentException {
+            if (initialLayoutClassList != null) {
+                this.initialLayoutClassList = initialLayoutClassList;
             } else {
                 throw new InvalidArgumentException(
                         "The given connection data is too long, limit is 1000 characters: " + data.length());

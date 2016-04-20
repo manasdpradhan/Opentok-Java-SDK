@@ -27,25 +27,25 @@ import com.opentok.exception.OpenTokException;
 */
 public class Session {
 
-    private String sessionId;
-    private int apiKey;
-    private String apiSecret;
-    private SessionProperties properties;
-    
+    private final String sessionId;
+    private final int apiKey;
+    private final String apiSecret;
+    private final SessionProperties properties;
+
     protected Session(String sessionId, int apiKey, String apiSecret) {
         this.sessionId = sessionId;
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;
         this.properties = new SessionProperties.Builder().build();
     }
-    
+
     protected Session(String sessionId, int apiKey, String apiSecret, SessionProperties properties) {
         this.sessionId = sessionId;
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;
         this.properties = properties;
     }
-    
+
     /**
     * Returns the OpenTok API key used to generate the session.
     */
@@ -59,7 +59,7 @@ public class Session {
     public String getSessionId() {
         return sessionId;
     }
-    
+
     /**
     * Returns the properties defining the session. These properties include:
     *
@@ -72,7 +72,7 @@ public class Session {
     public SessionProperties getProperties() {
         return properties;
     }
-    
+
     /**
      * Generates the token for the session. The role is set to publisher, the token expires in
      * 24 hours, and there is no connection data.
@@ -117,6 +117,7 @@ public class Session {
         Role role = tokenOptions.getRole();
         double expireTime = tokenOptions.getExpireTime(); // will be 0 if nothing was explicitly set
         String data = tokenOptions.getData();             // will be null if nothing was explicitly set
+        String initialLayoutClassList = tokenOptions.getInitialLayoutClassList();
         Long create_time = new Long(System.currentTimeMillis() / 1000).longValue();
 
         StringBuilder dataStringBuilder = new StringBuilder();
@@ -157,6 +158,12 @@ public class Session {
                         "Error during URL encode of your connection data: " +  e.getMessage());
             }
         }
+
+        if ( initialLayoutClassList != null) {
+            dataStringBuilder.append("&initial_layout_class_list=");
+            dataStringBuilder.append(initialLayoutClassList);
+        }
+
 
 
         StringBuilder tokenStringBuilder = new StringBuilder();
