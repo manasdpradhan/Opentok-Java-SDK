@@ -1,6 +1,6 @@
 /**
  * OpenTok Java SDK
- * Copyright (C) 2015 TokBox, Inc.
+ * Copyright (C) 2016 TokBox, Inc.
  * http://www.tokbox.com
  *
  * Licensed under The MIT License (MIT). See LICENSE file for more information.
@@ -146,9 +146,9 @@ public class Archive {
     }
 
     /**
-     * For archives with the status of Status.STOPPED, this can be set to "90 mins exceeded",
-     * "failure", "session ended", or "user initiated". For archives with the status of
-     * Status.FAILED, this can be set to "system failure".
+     * For archives with the status of Status.STOPPED, this can be set to "maximum duration
+     * exceeded", "maximum idle time exceeded", "session ended", "user initiated". For archives
+     * with the status of Status.FAILED, this can be set to "failure".
      */
     public String getReason() {
         return reason;

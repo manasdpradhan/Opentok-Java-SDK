@@ -1,6 +1,6 @@
 /**
  * OpenTok Java SDK
- * Copyright (C) 2015 TokBox, Inc.
+ * Copyright (C) 2016 TokBox, Inc.
  * http://www.tokbox.com
  *
  * Licensed under The MIT License (MIT). See LICENSE file for more information.
@@ -159,12 +159,10 @@ public class Session {
             }
         }
 
-        if ( initialLayoutClassList != null) {
+        if (initialLayoutClassList != null) {
             dataStringBuilder.append("&initial_layout_class_list=");
             dataStringBuilder.append(initialLayoutClassList);
         }
-
-
 
         StringBuilder tokenStringBuilder = new StringBuilder();
         try {

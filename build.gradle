@@ -10,10 +10,7 @@ apply plugin: 'eclipse'
 
 group = 'com.tokbox'
 archivesBaseName = 'opentok-server-sdk'
-// TODO: how do we increment this before/after a release for deployment and development?
-version = '2.3.2-alpha.1'
-
-sourceCompatibility = 1.6
+version = '3.0.0-beta.2'
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
@@ -42,7 +39,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '[4.3,5.0['
     testCompile group: 'com.github.tomakehurst', name: 'wiremock', version: '[1.45,1.99999)'
     testCompile group: 'commons-lang', name: 'commons-lang', version: '[2.6,2.99999)'
-    compile group: 'com.ning', name: 'async-http-client', version: '[1.6.1,1.9['
+    compile group: 'com.ning', name: 'async-http-client', version: '[1.9,2.0['
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '[2.3.1,2.99999)'
     compile group: 'commons-validator', name: 'commons-validator', version: '[1.4.0,1.99999)'
     compile group: 'commons-codec', name: 'commons-codec', version: '[1.9,1.99999]'
@@ -85,7 +82,7 @@ uploadArchives {
             pom.project {
                 name 'OpenTok Java SDK'
                 packaging 'jar'
-                description 'The OpenTok Ruby SDK lets you generate sessions and tokens for OpenTok applications. This version of the SDK also includes support for working with OpenTok 2.0 archives.'
+                description 'The OpenTok Java SDK lets you generate sessions and tokens for OpenTok applications. This version of the SDK also includes support for working with OpenTok 2.0 archives.'
                 url 'http://www.tokbox.com/opentok'
 
                 scm {
@@ -122,4 +119,17 @@ uploadArchives {
 
 test {
     maxHeapSize = "1024m"
+}
+
+sourceCompatibility = 1.7
+// credit: http://stackoverflow.com/a/22681854/305340
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
+    doFirst {
+        if (System.env.JDK7_HOME != null) {
+            options.bootClasspath = "$System.env.JDK7_HOME/jre/lib/rt.jar"
+            options.bootClasspath += "$File.pathSeparator$System.env.JDK7_HOME/jre/lib/jce.jar"
+            // and other specific JDK jars
+        }
+    }
 }

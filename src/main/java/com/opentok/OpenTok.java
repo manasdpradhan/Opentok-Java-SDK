@@ -1,6 +1,6 @@
 /**
  * OpenTok Java SDK
- * Copyright (C) 2015 TokBox, Inc.
+ * Copyright (C) 2016 TokBox, Inc.
  * http://www.tokbox.com
  *
  * Licensed under The MIT License (MIT). See LICENSE file for more information.
@@ -416,8 +416,8 @@ public class OpenTok {
     /**
      * Stops an OpenTok archive that is being recorded.
      * <p>
-     * Archives automatically stop recording after 90 minutes or when all clients have disconnected from the
-     * session being archived.
+     * Archives automatically stop recording after 120 minutes or when all clients have disconnected
+     * from the session being archived.
      *
      * @param archiveId The archive ID of the archive you want to stop recording.
      * @return The Archive object corresponding to the archive being stopped.
